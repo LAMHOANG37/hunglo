@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LamMuse</title>
+  <script>try { document.documentElement.dataset.theme = localStorage.getItem('muse.theme.v2') || 'dark'; } catch (e) {}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="mac-titlebar">
+    <div class="titlebar-drag"></div>
+    <div class="titlebar-crumb"><strong id="crumb-title">Studio</strong></div>
+    <div class="titlebar-actions">
+      <select id="prj-select" class="select prj-select" title="Dự án đang mở"></select>
+      <button id="prj-manage" class="btn-ghost btn-sm">Dự án</button>
+      <details id="acc-menu" class="acc-menu">
+        <summary id="acc-sum" title="Bấm để xem từng tài khoản"></summary>
+        <div class="acc-menu-pop"><div id="acc-chips"></div><button id="acc-menu-manage" class="btn-ghost btn-sm">Quản lý tài khoản</button></div>
+      </details>
+      <span id="top-blocked" class="st-chip" data-tone="warn" hidden><span class="st-dot"></span><span></span></span>
+      <button id="btn-resume" class="btn-ghost btn-sm" title="Chạy tiếp các task đang chờ">Chạy tiếp</button>
+      <button id="btn-stop-all" class="btn-danger btn-sm" title="Huỷ mọi task đang chờ và đang chạy">Dừng tất cả</button>
+      <button id="btn-open-finder" class="btn-ghost btn-sm" title="Mở thư mục lưu">Thư mục</button>
+      <button id="btn-theme" class="btn-ghost btn-sm" title="Đổi giao diện Sáng / Tối">🌙</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar-nav">
+      <div class="brand-block">
+        <div class="brand-logo-hex">L</div>
+        <div>
+          <div class="brand-title">LamMuse</div>
+          <div class="brand-badge">Desktop</div>
+        </div>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-item" data-tab="tab-studio"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span>Studio<span class="counter-badge" id="badge-active" hidden>0</span></button>
+        <button class="nav-item" data-tab="tab-assets"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.5-6 7-6s6.3 2.4 7 6"/><path d="M18 3l.7 1.6 1.6.7-1.6.7L18 7.6l-.7-1.6-1.6-.7 1.6-.7z"/></svg></span>Tư liệu</button>
+        <button class="nav-item" data-tab="tab-script"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 5l2 4M13 5l2 4"/></svg></span>Kịch bản</button>
+        <button class="nav-item" data-tab="tab-library"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Thư viện</button>
+        <button class="nav-item" data-tab="tab-accounts"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7M18.5 14.8c1.7.8 2.8 2.6 3 5.2"/></svg></span>Tài khoản</button>
+        <button class="nav-item" data-tab="tab-ladipage"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>LadiPage</button>
+        <button class="nav-item" data-tab="tab-fbpost"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 10v4a1 1 0 001 1h2l5 4V5L7 9H5a1 1 0 00-1 1z"/><path d="M16 9a4 4 0 010 6M18.5 6.5a7.5 7.5 0 010 11"/></svg></span>Đăng FB Reels</button>
+        <button class="nav-item" data-tab="tab-api"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg></span>API</button>
+        <button class="nav-item" data-tab="tab-settings"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></span>Cài đặt</button>
+      </nav>
+    </aside>
+
+    <main class="main-stage">
+
+      <!-- STUDIO: soạn lệnh | hàng đợi task (mọi nguồn) | chi tiết -->
+      <section id="tab-studio" class="stage-view stage-fill">
+        <div class="studio">
+          <div class="card studio-col studio-compose">
+            <div class="seg" role="tablist">
+              <button class="seg-btn" data-kind="image">Tạo ảnh</button>
+              <button class="seg-btn active" data-kind="video">Tạo video</button>
+            </div>
+            <div>
+              <div class="row-between"><label class="label" for="st-prompt">Prompt</label><span id="st-count" class="muted small"></span></div>
+              <textarea id="st-prompt" class="textarea" rows="8" placeholder="Mỗi prompt cách nhau 1 dòng trống"></textarea>
+              <div class="row st-tpl-row">
+                <select id="st-tpl" class="select"><option value="">Chèn mẫu prompt…</option></select>
+                <button type="button" id="st-tpl-save" class="btn-ghost btn-sm">Lưu làm mẫu</button>
+              </div>
+              <div id="st-chars" class="muted small"></div>
+            </div>
+            <div class="st-switches">
+              <label class="switch"><input type="checkbox" id="st-model"><span></span>Người mẫu <em id="st-model-n" class="muted"></em></label>
+              <label class="switch"><input type="checkbox" id="st-rotate"><span></span>Ảnh luân phiên <em id="st-rotate-n" class="muted"></em></label>
+            </div>
+            <div>
+              <span class="label">Ảnh tham chiếu (tối đa 6)</span>
+              <div id="st-refs" class="img-strip"></div>
+            </div>
+            <div class="studio-params">
+              <div id="st-n-wrap" hidden>
+                <label class="label" for="st-n">Số ảnh mỗi prompt</label>
+                <select id="st-n" class="select"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+              </div>
+              <div>
+                <div class="label">Tỉ lệ</div>
+                <select id="st-ratio" class="select" hidden>
+                  <option value="9:16">9:16 · Dọc</option><option value="16:9">16:9 · Ngang</option><option value="1:1">1:1 · Vuông</option>
+                  <option value="4:3">4:3</option><option value="3:4">3:4</option>
+                </select>
+                <div class="seg seg-fill" id="st-ratio-seg"><button type="button" class="seg-btn" data-r="9:16">9:16</button><button type="button" class="seg-btn" data-r="16:9">16:9</button><button type="button" class="seg-btn" data-r="1:1">1:1</button><button type="button" class="seg-btn" data-r="4:3">4:3</button><button type="button" class="seg-btn" data-r="3:4">3:4</button></div>
+              </div>
+            </div>
+            <details class="studio-adv">
+              <summary>Nâng cao</summary>
+              <div class="stack">
+                <div>
+                  <label class="label" for="st-sep">Ký tự tách prompt</label>
+                  <input id="st-sep" class="input" placeholder="Để trống = dòng trống">
+                </div>
+                <div>
+                  <span class="label">Dùng ảnh tham chiếu</span>
+                  <div class="seg" id="st-imgmode">
+                    <button class="seg-btn active" data-mode="shared" title="Mọi prompt dùng tất cả ảnh">Dùng chung</button>
+                    <button class="seg-btn" data-mode="pair" title="Prompt 1 dùng ảnh 1, prompt 2 dùng ảnh 2...">Ghép cặp</button>
+                  </div>
+                </div>
+              </div>
+            </details>
+            <div class="studio-actions">
+              <button id="st-run" class="btn btn-block">Tạo &amp; chạy</button>
+              <button id="st-hold" class="btn-ghost btn-block">Chỉ thêm vào hàng đợi</button>
+            </div>
+          </div>
+
+          <div class="card studio-col studio-queue">
+            <div class="sq-tools">
+              <input id="sq-q" class="input" type="search" placeholder="Tìm prompt…">
+              <select id="sq-status" class="select">
+                <option value="">Mọi trạng thái</option><option value="held">Chưa chạy</option><option value="queued">Đang chờ</option><option value="processing">Đang chạy</option>
+                <option value="succeeded">Xong</option><option value="failed">Lỗi</option><option value="cancelled">Đã huỷ</option>
+              </select>
+            </div>
+            <div class="row sq-picks">
+              <button type="button" class="btn-ghost btn-sm" data-pick="failed">Chọn lỗi</button>
+              <button type="button" class="btn-ghost btn-sm" data-pick="held">Chọn chưa chạy</button>
+            </div>
+            <div class="row-between">
+              <label class="check"><input type="checkbox" id="sq-all"> <span id="sq-count">0 task</span></label>
+              <select id="sq-sort" class="select" style="width:auto">
+                <option value="new">Mới nhất</option><option value="old">Cũ nhất</option><option value="status">Theo trạng thái</option>
+              </select>
+            </div>
+            <div id="sq-list" class="sq-list"></div>
+            <div class="sq-foot">
+              <button class="btn-ghost btn-sm" data-bulk="run">Chạy</button>
+              <button class="btn-ghost btn-sm" data-bulk="stop">Dừng</button>
+              <button class="btn-danger btn-sm" data-bulk="remove">Xoá</button>
+              <button class="btn-ghost btn-sm" data-bulk="retry-failed">Chạy lại lỗi</button>
+              <button class="btn-ghost btn-sm" data-bulk="merge">Ghép video</button>
+            </div>
+          </div>
+
+          <aside id="sd" class="card studio-col studio-detail"></aside>
+        </div>
+
+        <dialog id="st-edit" class="modal">
+          <form method="dialog" class="stack">
+            <h3>Chỉnh sửa prompt</h3>
+            <textarea id="st-edit-text" class="textarea" rows="8"></textarea>
+            <div class="row" style="justify-content:flex-end">
+              <button value="cancel" class="btn-ghost">Huỷ</button>
+              <button value="save" class="btn">Lưu &amp; chạy lại</button>
+            </div>
+          </form>
+        </dialog>
+      </section>
+
+      <!-- TƯ LIỆU: nhân vật, mẫu prompt, người mẫu cố định, ảnh luân phiên -->
+      <section id="tab-assets" class="stage-view">
+        <div class="stage-header">
+          <div>
+            <h1 class="stage-title">Tư liệu</h1>
+            <p class="stage-subtitle">Prompt có tên nhân vật (viết hoa đúng như tên, hoặc @tên) tự gắn ảnh · chọn làm người dẫn ở Kịch bản/LadiPage · người mẫu và ảnh luân phiên bật ở Studio</p>
+          </div>
+        </div>
+        <div class="assets-grid">
+          <div class="card stack">
+            <div class="row-between"><h3>Nhân vật</h3><button type="button" class="btn-ghost btn-sm" id="as-char-add">+ Thêm nhân vật</button></div>
+            <div id="as-chars" class="stack"></div>
+          </div>
+          <div class="card stack">
+            <div class="row-between"><h3>Mẫu prompt</h3><button type="button" class="btn-ghost btn-sm" id="as-tpl-add">+ Thêm mẫu</button></div>
+            <div id="as-tpls" class="stack"></div>
+          </div>
+          <div class="card stack">
+            <div class="row-between"><h3>Người mẫu cố định</h3><label class="switch"><input type="checkbox" id="as-model-on"><span></span>Bật</label></div>
+            <p class="muted small">Gắn vào mọi task khi bật (tối đa 3 ảnh).</p>
+            <div id="as-model" class="img-strip"></div>
+          </div>
+          <div class="card stack">
+            <div class="row-between"><h3>Ảnh luân phiên</h3><label class="switch"><input type="checkbox" id="as-rotate-on"><span></span>Bật</label></div>
+            <p class="muted small" id="as-rotate-hint">Mỗi task lấy 1 ảnh kế tiếp (tối đa 20 ảnh).</p>
+            <div id="as-rotate" class="img-strip"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- KỊCH BẢN: tạo video nhiều cảnh, storyboard, ghép (điều phối job ở renderer) -->
+      <section id="tab-script" class="stage-view stage-wide">
+        <div class="card compose-card">
+          <div class="compose-grid">
+            <div class="compose-main">
+              <div class="compose-modes">
+                <div class="seg" role="tablist">
+                  <button class="seg-btn active" data-mode="script">Kịch bản</button>
+                  <button class="seg-btn" data-mode="image">Từ ảnh</button>
+                </div>
+
+                <div data-mode-only="image" hidden>
+                  <span class="label">Gợi ý chuyển động</span>
+                  <div class="chips">
+                    <button class="preset-chip" data-motion="Cận cảnh zoom từ từ vào bề mặt sản phẩm, ánh sáng studio chuyên nghiệp phản chiếu lung linh, 4k cinematic">Zoom cận cảnh</button>
+                    <button class="preset-chip" data-motion="Sản phẩm xoay 360 độ mượt mà trên bục trưng bày sang trọng, ánh sáng phản chiếu lấp lánh">Xoay 360°</button>
+                    <button class="preset-chip" data-motion="Góc máy dynamic camera trượt ngang từ trái sang phải, hạt bụi vàng ma mị bay quanh sản phẩm">Trượt ngang cinematic</button>
+                    <button class="preset-chip" data-motion="Khói sương mờ ảo cuộn quanh sản phẩm, hiệu ứng mở hộp bí ẩn và cao cấp">Khói sương</button>
+                  </div>
+                </div>
+              </div>
+              <textarea id="input-scripts" class="textarea" rows="4" placeholder="Mỗi dòng là 1 cảnh · cách 1 dòng trống để sang video tiếp theo"></textarea>
+            </div>
+            <div data-params-slot>
+            <div id="shared-params" class="params-deck">
+              <div class="span-all">
+                <label class="label" for="param-board">Cách làm</label>
+                <select id="param-board" class="select">
+                  <option value="">Làm video thẳng · nhanh ~3 phút</option>
+                  <option value="auto">Storyboard → tự làm video · đồng nhất, ~8 phút</option>
+                  <option value="review">Storyboard → chờ tôi duyệt rồi làm video</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="param-ratio">Tỉ lệ</label>
+                <select id="param-ratio" class="select">
+                  <option value="9:16" selected>9:16 · Dọc (TikTok, Reels)</option>
+                  <option value="16:9">16:9 · Ngang (YouTube)</option>
+                  <option value="1:1">1:1 · Vuông</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="param-duration">Thời lượng</label>
+                <select id="param-duration" class="select">
+                  <option value="10s">10 giây · gộp 1 lệnh</option>
+                  <option value="16s">16 giây · gộp 1 lệnh (2 cảnh × 8s)</option>
+                  <option value="20s">20 giây · gộp 1 lệnh</option>
+                  <option value="24s">24 giây · gộp 1 lệnh (3 cảnh × 8s)</option>
+                  <option value="30s" selected>30 giây · gộp 1 lệnh (3 cảnh × 10s, tiết kiệm)</option>
+                  <option value="40s">40 giây · gộp 1 lệnh</option>
+                  <option value="50s">50 giây · gộp 1 lệnh</option>
+                  <option value="60s">60 giây · gộp 1 lệnh</option>
+                  <option value="each">Từng cảnh 10s · gửi lần lượt, app tự ghép</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="param-prefix">Tiền tố câu lệnh</label>
+                <input type="text" id="param-prefix" value="Tạo video chân thực: " class="input">
+              </div>
+              <div>
+                <label class="label" for="param-voice">Giọng đọc</label>
+                <select id="param-voice" class="select">
+                  <option value="">Không lồng tiếng (giữ tiếng gốc)</option>
+                  <option value="__self">Nhân vật tự nói — giọng Việt, khớp môi (như reel review)</option>
+                  <option value="Chipper Tambourine">Chipper Tambourine — Nam · trẻ trung, vui tươi</option>
+                  <option value="Upbeat Buoy">Upbeat Buoy — Nam · trầm ấm, hào hứng, hợp chốt sale</option>
+                  <option value="Warm Pebble">Warm Pebble — Nam · ấm, chuyên nghiệp, tin cậy</option>
+                  <option value="Husky Campfire">Husky Campfire — Nam · khàn nhẹ, ấm, thuyết phục</option>
+                  <option value="Spirited Canyon">Spirited Canyon — Nam · trầm, mạnh mẽ, nhiều năng lượng</option>
+                  <option value="Aria">Aria — Nữ · thân thiện, ấm áp (Meta AI)</option>
+                  <option value="Dynamic Sparkler">Dynamic Sparkler — Nữ · tự tin, năng động</option>
+                  <option value="Cheerful Sunflower">Cheerful Sunflower — Nữ · tươi sáng, dễ nghe</option>
+                  <option value="Bubbly Pompom">Bubbly Pompom — Nữ · sôi nổi, bắt tai</option>
+                  <option value="Zippy Cork">Zippy Cork — Nữ · nhanh nhẹn, hợp TikTok</option>
+                  <option value="Fizzy Bicycle">Fizzy Bicycle — Nam · cao, nhiều năng lượng</option>
+                  <option value="Sprightly Windchime">Sprightly Windchime — Nam · sáng, tinh nghịch</option>
+                  <option value="Warm">Warm — Meta AI · ấm</option>
+                  <option value="Smooth">Smooth — Meta AI · mượt</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="param-host">Người dẫn</label>
+                <select id="param-host" class="select" title="Ảnh storyboard và video vẽ người dẫn đúng giới tính này, khớp giọng đọc">
+                  <option value="">Theo giọng đọc</option>
+                  <option value="nữ">Nữ</option>
+                  <option value="nam">Nam</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="param-char">Nhân vật dẫn</label>
+                <select id="param-char" class="select" title="Gửi kèm ảnh nhân vật (tab Tư liệu) để mọi video giữ đúng 1 gương mặt người dẫn"></select>
+              </div>
+              <div>
+                <span class="label">Từng cảnh</span>
+                <label class="check"><input type="checkbox" id="param-merge" checked> Tự ghép khi xong</label>
+              </div>
+              <div>
+                <span class="label">Nhạc nền</span>
+                <div class="row"><label class="check" title="Video xong thì bốc ngẫu nhiên 1 bài trong thư mục Nhạc nền, lót nhỏ dưới giọng đọc. Giữ cả bản không nhạc."><input type="checkbox" id="param-music"> Ghép nhạc</label>
+                <button type="button" id="btn-music-folder" class="btn-ghost btn-sm" title="Mở thư mục nhạc nền">Thư mục</button></div>
+              </div>
+              <div>
+                <label class="label" for="param-copies">Số bản / video</label>
+                <input type="number" id="param-copies" class="input" min="1" max="20" value="1" title="Muse làm lại cùng kịch bản N lần, mỗi lần ra 1 video khác nhau để chọn">
+              </div>
+            </div>
+            </div>
+          </div>
+          <div class="compose-foot">
+            <div id="deck-common-image" class="attach-row">
+              <div class="grow">
+                <strong id="common-img-title">Ảnh sản phẩm (tuỳ chọn)</strong>
+                <div id="common-img-sub" class="muted small">Kéo thả hoặc chọn nhiều ảnh: mỗi ảnh làm ra 1 bộ video riêng.</div>
+              </div>
+              <button type="button" id="btn-pick-common-img" class="btn-ghost btn-sm">Chọn ảnh</button>
+              <button type="button" id="btn-remove-common-img" class="btn-danger btn-sm" hidden>Bỏ hết ảnh</button>
+              <div id="compose-images" class="img-strip" hidden></div>
+            </div>
+            <p id="compose-summary" class="muted small"></p>
+            <button id="btn-add-to-queue" class="btn">Đưa vào hàng đợi</button>
+          </div>
+        </div>
+
+        <div id="queue-wrap" class="queue-wrap">
+          <div class="queue-bar">
+            <div id="queue-filters" class="filter-tabs" role="tablist"></div>
+            <div class="row">
+              <button id="btn-clear-done" class="btn-ghost btn-sm">Bỏ video đã xong</button>
+              <button id="btn-queue-folder" class="btn-ghost btn-sm">Thư mục video</button>
+            </div>
+          </div>
+          <div id="queue-notice" class="notice" hidden></div>
+          <div class="queue-split">
+            <div class="card queue-table">
+              <div class="queue-head">
+                <span></span><span>#</span><span></span><span>Video</span><span>Trạng thái</span><span>Thao tác</span>
+              </div>
+              <div id="queue-list" class="queue-list"></div>
+            </div>
+            <aside id="queue-preview" class="card queue-preview"></aside>
+          </div>
+          <div class="card queue-foot">
+            <div class="row">
+              <button id="btn-check-all" class="btn-ghost btn-sm">Chọn tất cả</button>
+              <button id="btn-check-none" class="btn-ghost btn-sm">Bỏ chọn</button>
+              <button id="btn-remove-checked" class="btn-danger btn-sm" disabled>Xoá đã chọn</button>
+              <button id="btn-clear-queue" class="btn-danger btn-sm">Xoá hết</button>
+            </div>
+            <div class="row">
+              <button id="btn-stop-render" class="btn-danger" disabled>Dừng</button>
+              <button id="btn-start-render" class="btn">Bắt đầu render trên Muse</button>
+            </div>
+            <div class="queue-status"><strong id="queue-progress">Chưa chạy</strong><span class="muted small"> · <span id="count-queue">0</span> video</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LADIPAGE -->
+      <section id="tab-ladipage" class="stage-view">
+        <div class="stage-header">
+          <div>
+            <h1 class="stage-title">Từ LadiPage ra kịch bản video</h1>
+            <p class="stage-subtitle">Dán link landing page: lấy ảnh gốc, giá, chính sách và sinh 3 kịch bản phân cảnh cho Muse</p>
+          </div>
+        </div>
+
+        <ol class="steps" id="ladi-steps">
+          <li class="step active"><b>1</b>Dán link</li>
+          <li class="step"><b>2</b>Chọn ảnh sản phẩm</li>
+          <li class="step"><b>3</b>Sửa kịch bản, chọn cách làm</li>
+          <li class="step"><b>4</b>Đưa vào hàng đợi</li>
+        </ol>
+
+        <div class="card">
+          <label class="label" for="input-ladi-url">Link LadiPage của sản phẩm</label>
+          <div class="row">
+            <input type="text" id="input-ladi-url" class="input grow" placeholder="https://shop.lattepic.vn/lich-mua-vong">
+            <button id="btn-scrape-ladi" class="btn">Quét và sinh kịch bản</button>
+          </div>
+          <div id="ladi-loading" class="notice" hidden>
+            <span class="st-chip" data-tone="live"><span class="st-dot"></span>Đang xử lý</span>
+            <span id="ladi-loading-text">Đang tải LadiPage, bóc tách ảnh và bảng giá...</span>
+          </div>
+        </div>
+
+        <div id="ladi-skeleton" class="ladi-grid-layout" hidden>
+          <div class="card stack"><div class="skel w60"></div><div class="skel w40"></div><div class="skel h120"></div></div>
+          <div class="card stack"><div class="skel w40"></div><div class="skel h80"></div><div class="skel h80"></div><div class="skel h80"></div></div>
+        </div>
+
+        <div id="ladi-results" hidden>
+          <div class="ladi-grid-layout">
+            <div class="card stack">
+              <div>
+                <h4 id="res-product-name" class="product-name">Tên sản phẩm</h4>
+                <div id="res-product-facts" class="chips fact-chips"></div>
+                <p id="res-product-usp" class="muted small"></p>
+                <details class="raw-lines">
+                  <summary>Xem chữ gốc trên trang</summary>
+                  <ul id="res-product-raw"></ul>
+                </details>
+              </div>
+              <div>
+                <div class="row-between">
+                  <span class="label">Kho ảnh sản phẩm (<span id="res-img-count">0</span>)</span>
+                  <button type="button" id="btn-upload-custom-ladi-img" class="btn-ghost btn-sm">Thêm ảnh từ máy</button>
+                </div>
+                <p class="muted small">Bấm chọn 1–3 ảnh rõ sản phẩm nhất (viền xanh). Ảnh được gửi kèm cả video để Muse giữ đúng sản phẩm.</p>
+                <div id="res-images-grid" class="ladi-images-grid"></div>
+              </div>
+            </div>
+
+            <div class="card stack">
+              <div class="card-h"><div><h3>Kịch bản</h3><p>Sửa được lời thoại và prompt từng cảnh trước khi đưa vào hàng đợi.</p></div></div>
+              <div class="row-between">
+                <div class="chips" id="ladi-script-tabs"></div>
+                <label class="check" title="Lời chốt không đọc số tiền, chỉ nói giá ưu đãi để ở link (kiểu reel affiliate). Đổi là sinh lại kịch bản, mất chữ đã sửa."><input type="checkbox" id="ladi-no-price"> Không đọc giá</label>
+              </div>
+              <div id="ladi-script-scenes-container"></div>
+              <details class="raw-lines" id="ladi-prompt-preview">
+                <summary>Xem lệnh sẽ gửi Muse</summary>
+                <pre id="ladi-prompt-text" class="prompt-preview"></pre>
+              </details>
+              <div data-params-slot></div>
+              <p id="ladi-summary" class="muted small"></p>
+              <div class="row">
+                <button id="btn-import-to-muse" class="btn btn-lg grow">Đưa kịch bản đã tích vào hàng đợi</button>
+                <button id="btn-import-all" class="btn-ghost btn-lg">Tích cả</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TÀI KHOẢN: nhiều tài khoản Muse, mỗi tài khoản 1 Chrome riêng -->
+      <section id="tab-accounts" class="stage-view">
+        <div class="stage-header">
+          <div>
+            <h1 class="stage-title">Tài khoản Muse</h1>
+            <p class="stage-subtitle">Mỗi tài khoản 1 Chrome riêng, chạy song song. Đăng nhập 1 lần, app nhớ phiên.</p>
+          </div>
+          <div class="row">
+            <button id="acc-check-login" class="btn-ghost btn-sm">Kiểm tra phiên</button>
+            <button id="acc-check-quota" class="btn-ghost btn-sm">Kiểm tra hạn mức</button>
+            <button id="acc-add" class="btn btn-sm">+ Thêm tài khoản</button>
+          </div>
+        </div>
+        <div class="card acc-settings">
+          <div>
+            <label class="label" for="acc-max">TK chạy đồng thời</label>
+            <input id="acc-max" class="input" type="number" min="1" max="20">
+          </div>
+          <div>
+            <label class="label" for="acc-total">Tổng luồng</label>
+            <input id="acc-total" class="input" type="number" min="1" max="50">
+          </div>
+          <div hidden>
+            <span class="label">Chia việc</span>
+            <div class="seg" id="acc-mode">
+              <button class="seg-btn" data-mode="rotate" title="Tài khoản rảnh, còn nhiều hạn mức nhận trước">Luân phiên</button>
+              <button class="seg-btn" data-mode="sequential" title="Dùng hết tài khoản đầu rồi mới sang tài khoản sau">Lần lượt</button>
+            </div>
+          </div>
+          <label class="switch" title="Cho phép giao việc khi hết hạn mức tuần nhưng còn token. Không bỏ qua giới hạn video ngày của Muse."><input type="checkbox" id="acc-topup"><span></span>Cho phép dùng tài khoản còn token khi hết hạn mức tuần</label>
+          <label class="switch" title="Chỉ cho phép thử gửi khi hết hạn mức tuần/token. Muse vẫn quyết định nhận lệnh; tài khoản bị giới hạn video ngày luôn được bỏ qua."><input type="checkbox" id="acc-keep"><span></span>Cho phép thử khi hết hạn mức tuần/token (Muse có thể từ chối)</label>
+          <p class="muted small" style="grid-column:1/-1">App tự xác minh phiên và hạn mức của tài khoản đang bật trước khi giao việc. Muse báo giới hạn video ngày hoặc lỗi Runway → chuyển tài khoản; không còn tài khoản phù hợp → giữ task chờ. Dùng “Thử video lại” khi muốn cho phép tài khoản bị chặn thử tạo video lại.</p>
+          <label class="switch"><input type="checkbox" id="acc-pool"><span></span>Kho proxy dự phòng — tài khoản để trống ô Proxy tự lấy 1 cái ở đây, proxy chết tự chuyển cái khác</label>
+          <div id="acc-proxy-box" class="acc-proxy" hidden>
+            <textarea id="acc-proxies" class="textarea" rows="4" spellcheck="false" placeholder="1.2.3.4:8080&#10;1.2.3.4:8080:user:pass&#10;user:pass@proxy.vn:3128&#10;socks5://1.2.3.4:1080 (socks5 không có user/pass)"></textarea>
+            <div class="row-between"><div id="acc-proxy-status" class="acc-proxy-status small"></div><button id="acc-proxy-check" class="btn-ghost btn-sm">Kiểm tra proxy</button></div>
+          </div>
+          <datalist id="acc-proxy-pool"></datalist>
+        </div>
+        <div id="acc-list" class="acc-list"></div>
+      </section>
+
+      <!-- THƯ VIỆN: video + ảnh storyboard trong thư mục lưu -->
+      <section id="tab-library" class="stage-view">
+        <div class="stage-header">
+          <div>
+            <h1 class="stage-title">Thư viện</h1>
+            <p class="stage-subtitle" id="lib-path">Ảnh và video Muse làm xong</p>
+          </div>
+          <button id="lib-open" class="btn-ghost btn-sm">Mở thư mục</button>
+        </div>
+        <div class="queue-bar">
+          <select id="lib-prj" class="select prj-select" title="Lọc theo dự án"></select>
+          <div id="lib-filters" class="filter-tabs">
+            <button class="filter-tab active" data-f="all">Tất cả<span></span></button>
+            <button class="filter-tab" data-f="image">Ảnh<span></span></button>
+            <button class="filter-tab" data-f="video">Video<span></span></button>
+          </div>
+          <div class="row">
+            <span id="lib-sel" class="muted small"></span>
+            <select id="lib-asset" class="select prj-select" title="Lưu ảnh đã chọn vào Tư liệu" disabled></select>
+            <button id="lib-merge" class="btn-ghost btn-sm" disabled>Ghép video</button>
+            <button id="lib-trash" class="btn-danger btn-sm" disabled>Xoá</button>
+          </div>
+        </div>
+        <div id="library-grid" class="library-grid"></div>
+      </section>
+
+      <!-- ĐĂNG FACEBOOK -->
+      <section id="tab-fbpost" class="stage-view">
+        <div class="stage-header">
+          <div>
+            <h1 class="stage-title">Đăng Facebook Reels</h1>
+            <p class="stage-subtitle">Đăng video lên Fanpage bằng Page Access Token (Graph API v20)</p>
+          </div>
+        </div>
+
+        <div id="fb-page-banner" class="card row-between">
+          <div class="row">
+            <img id="fb-banner-avatar" class="avatar" src="assets/icon48.png" alt="">
+            <div>
+              <div id="fb-banner-name"><strong>Chưa kết nối Fanpage</strong></div>
+              <div id="fb-banner-id" class="muted small">Vào Cài đặt để nhập token Fanpage</div>
+            </div>
+          </div>
+          <div class="row">
+            <select id="sel-fb-active-page" class="select" hidden></select>
+            <button id="btn-goto-settings" class="btn-ghost btn-sm">Quản lý token</button>
+          </div>
+        </div>
+
+        <div class="card stack">
+          <div>
+            <label class="label" for="sel-fb-video">Video cần đăng</label>
+            <div class="row">
+              <select id="sel-fb-video" class="select grow">
+                <option value="">— Chọn video trong kho —</option>
+              </select>
+              <input type="file" id="file-fb-video" accept="video/mp4" hidden>
+              <button id="btn-browse-fb-video" class="btn-ghost">Chọn file khác</button>
+            </div>
+            <div id="fb-selected-path" class="path"></div>
+          </div>
+          <div>
+            <label class="label" for="input-fb-caption">Caption</label>
+            <textarea id="input-fb-caption" class="textarea" rows="4" placeholder="Tiêu đề, caption chốt đơn kèm hashtag (VD: #reels #xuhuong #freeship)"></textarea>
+          </div>
+          <div class="row-between">
+            <span class="muted small">Định dạng: Facebook Reels (video dọc 9:16)</span>
+            <button id="btn-publish-reels" class="btn btn-lg">Đăng lên Reels</button>
+          </div>
+          <div id="fb-publish-loading" class="notice" hidden>
+            <span class="st-chip" data-tone="live"><span class="st-dot"></span>Đang đăng</span>
+            <span id="fb-publish-status-text">Đang kết nối Facebook Graph API...</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3>Lịch sử đăng</h3></div>
+          <div id="fb-published-list" class="queue-list">
+            <div class="queue-empty">Chưa có bài đăng nào trong phiên này.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- API & TÍCH HỢP -->
+      <section id="tab-api" class="stage-view">
+        <div class="stage-header">
+          <div>
+            <h1 class="stage-title">API &amp; tích hợp</h1>
+            <p class="stage-subtitle">Hệ thống khác (CRM, bot, script) đẩy task vào dây chuyền qua cổng nội bộ của máy này</p>
+          </div>
+          <span class="st-chip" data-tone="ok"><span class="st-dot"></span>Đang nghe 127.0.0.1:48900</span>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div><h3>API key</h3><p>Bắt buộc với API v1. Gửi qua header <code>Authorization: Bearer &lt;key&gt;</code>. Đổi key thì key cũ hết dùng.</p></div></div>
+          <div class="api-key-row">
+            <input id="api-key" class="input" type="password" readonly>
+            <button id="btn-api-key-show" class="btn-ghost btn-sm">Hiện</button>
+            <button id="btn-api-key-copy" class="btn-ghost btn-sm">Copy</button>
+            <button id="btn-api-key-new" class="btn-danger btn-sm">Đổi key</button>
+            <button id="btn-api-test" class="btn-ghost btn-sm">Kiểm tra API</button>
+          </div>
+          <pre id="api-test-result" class="code-preview" hidden></pre>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div><h3>Tài liệu API v1</h3><p>Tạo task trả về ngay <code>{task:{id,status:"queued"}}</code>; hỏi lại theo id tới khi <code>succeeded</code> rồi tải file.</p></div></div>
+          <pre class="code-preview">POST   /api/v1/tasks               tạo task
+       {"prompt": "...", "images": [{"imageUrl": "https://..."} | {"imageBase64": "data:image/jpeg;base64,..."}],
+        "timeoutMin": 10, "label": "tên gợi nhớ"}
+GET    /api/v1/tasks?status=&amp;limit=   danh sách (status: queued|processing|succeeded|failed|cancelled)
+GET    /api/v1/tasks/:id           xem 1 task
+POST   /api/v1/tasks/:id/cancel    huỷ
+POST   /api/v1/tasks/:id/retry     chạy lại task lỗi / đã huỷ
+DELETE /api/v1/tasks/:id           xoá
+GET    /api/v1/tasks/:id/file      tải video mp4</pre>
+          <pre id="api-curl" class="code-preview"></pre>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div><h3>API cũ cho Content CRM (không cần key)</h3><p>Vẫn chạy như trước; kịch bản vào chung hàng đợi task với nguồn "CRM".</p></div></div>
+          <pre class="code-preview">fetch('http://127.0.0.1:48900/api/render', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ topicId: 'chien_dich_noel_01', prompt: 'Cận cảnh hộp quà Giáng Sinh...' })
+});</pre>
+          <div id="crm-logs-list" class="queue-list">
+            <div class="queue-empty">Đang chờ lệnh từ Content CRM...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CÀI ĐẶT -->
+      <section id="tab-settings" class="stage-view">
+        <div class="stage-header">
+          <div>
+            <h1 class="stage-title">Cài đặt</h1>
+            <p class="stage-subtitle">Thư mục lưu, giới hạn thời gian, token Facebook</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div><h3>Chạy task</h3><p>Áp dụng cho task chạy sau khi lưu.</p></div></div>
+          <div class="set-grid">
+            <div class="span-all">
+              <label class="label" for="set-out">Thư mục lưu</label>
+              <div class="row">
+                <input id="set-out" class="input grow" readonly>
+                <button id="set-out-pick" class="btn-ghost">Chọn thư mục</button>
+                <button id="btn-settings-open-finder" class="btn-ghost">Mở</button>
+              </div>
+            </div>
+            <div>
+              <label class="label" for="set-attempts">Số lần thử khi lỗi</label>
+              <input id="set-attempts" class="input" type="number" min="1" max="5">
+            </div>
+            <div>
+              <label class="label" for="set-img-min">Giới hạn tạo ảnh (phút)</label>
+              <input id="set-img-min" class="input" type="number" min="1" max="60">
+            </div>
+            <div>
+              <label class="label" for="set-vid-min">Giới hạn tạo video (phút)</label>
+              <input id="set-vid-min" class="input" type="number" min="5" max="120">
+            </div>
+          </div>
+          <div class="card-foot"><span class="muted small">Thử lại tốn thêm lượt Muse.</span><button id="set-save" class="btn">Lưu</button></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div><h3>Facebook token</h3><p>Dán 1 token (User hoặc Page), app tự lấy danh sách Fanpage bạn quản lý.</p></div></div>
+
+          <label class="label" for="cfg-fb-token">Access token</label>
+          <div class="row">
+            <input type="password" id="cfg-fb-token" class="input grow" placeholder="Bắt đầu bằng EAA...">
+            <button type="button" id="btn-toggle-token-vis" class="btn-ghost" title="Hiện / ẩn token">Hiện</button>
+            <button id="btn-cfg-fetch-pages" class="btn">Quét Fanpage</button>
+          </div>
+
+          <div id="cfg-fb-active-banner" class="active-page">
+            <div class="row">
+              <img id="cfg-active-avatar" class="avatar" src="" alt="">
+              <div>
+                <div class="row"><strong id="cfg-active-name">Tên Fanpage</strong><span class="st-chip" data-tone="ok">Đang dùng</span></div>
+                <div id="cfg-active-id" class="muted small">ID: ...</div>
+              </div>
+            </div>
+            <button id="btn-cfg-clear-fb" class="btn-danger btn-sm">Đổi token khác</button>
+          </div>
+
+          <div id="cfg-fb-pages-container" class="fb-pages-box">
+            <div class="row-between">
+              <span class="label">Fanpage được cấp quyền (<span id="cfg-fb-pages-count">0</span>)</span>
+              <span class="muted small">Bấm vào thẻ để chọn</span>
+            </div>
+            <div id="cfg-fb-pages-list" class="fb-pages-list"></div>
+            <div class="card-foot">
+              <div id="cfg-selected-page-summary" class="small">Chưa chọn Fanpage nào</div>
+              <button id="btn-cfg-save-selected-page" class="btn">Lưu Fanpage đã chọn</button>
+            </div>
+          </div>
+
+          <div class="guide">
+            <b>Cách lấy User token để quét mọi Fanpage</b><br>
+            1. Mở <b>developers.facebook.com/tools/explorer</b> (Graph API Explorer).<br>
+            2. Ở mục <b>User or Page</b>, chọn <b>User Token</b>.<br>
+            3. Tích quyền <code>pages_show_list</code>, <code>pages_read_engagement</code>, <code>pages_manage_posts</code>, <code>publish_video</code>.<br>
+            4. Bấm <b>Generate Access Token</b>, dán vào ô trên rồi bấm <b>Quét Fanpage</b>.
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <dialog id="prj-dlg" class="modal">
+    <div class="stack">
+      <h3>Dự án</h3>
+      <div id="prj-list" class="stack"></div>
+      <div class="row"><input id="prj-new" class="input" placeholder="Tên dự án mới"><button type="button" id="prj-add" class="btn btn-sm">Thêm</button></div>
+      <div class="row" style="justify-content:flex-end"><button type="button" class="btn-ghost" onclick="this.closest('dialog').close()">Đóng</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="name-dlg" class="modal">
+    <form method="dialog" class="stack">
+      <h3 id="name-dlg-title"></h3>
+      <input id="name-dlg-input" class="input" maxlength="60">
+      <div class="row" style="justify-content:flex-end">
+        <button value="cancel" class="btn-ghost" formnovalidate>Huỷ</button>
+        <button value="ok" class="btn">Lưu</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="merge-dlg" class="modal">
+    <div class="stack">
+      <h3>Ghép video</h3>
+      <p class="muted small">Ghép theo thứ tự dưới đây (cùng tỉ lệ khung).</p>
+      <div id="merge-list" class="stack merge-list"></div>
+      <div><label class="label" for="merge-name">Tên file</label><input id="merge-name" class="input" placeholder="Để trống = tự đặt tên"></div>
+      <div class="merge-bar" hidden><span id="merge-pct"></span></div>
+      <div class="row" style="justify-content:flex-end">
+        <button type="button" id="merge-cancel" class="btn-ghost">Huỷ</button>
+        <button type="button" id="merge-go" class="btn">Ghép</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+  <script src="compose.js"></script>
+  <script src="assets.js"></script>
+  <script src="merge.js"></script>
+  <script src="studio.js"></script>
+  <script src="script.js"></script>
+  <script src="ladi.js"></script>
+  <script src="fb.js"></script>
+  <script src="accounts.js"></script>
+  <script src="library.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

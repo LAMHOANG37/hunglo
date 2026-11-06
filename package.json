@@ -1,0 +1,64 @@
+{
+  "name": "haohao",
+  "version": "1.0.0",
+  "description": "LamMuse - Desktop video studio",
+  "main": "main.js",
+  "author": "Horizon LLC",
+  "license": "Proprietary",
+  "edition": "customer",
+  "productName": "LamMuse",
+  "scripts": {
+    "start": "electron .",
+    "test": "node scripts/test.cjs",
+    "dist:win": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "26.0.12"
+  },
+  "build": {
+    "appId": "vn.lammuse.app",
+    "productName": "LamMuse",
+    "asar": true,
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "engine/**/*.js",
+      "!engine/**/*.test.js",
+      "ui/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "vendor/ffmpeg",
+        "to": "bin",
+        "filter": [
+          "**/*",
+          "!README.md"
+        ]
+      }
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "LamMuse"
+    }
+  }
+}
